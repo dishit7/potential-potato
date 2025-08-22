@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
-import { ThemeInput } from 'react-activity-calendar';
 import { useTheme } from 'next-themes';
 
 const GitHubCalendar = dynamic(
