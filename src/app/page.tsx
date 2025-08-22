@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
 import Markdown from "react-markdown";
+import GitHubCalendarWrapper from "@/components/githubcalendar";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -22,7 +23,7 @@ export default function Page() {
                 delay={BLUR_FADE_DELAY}
                 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none"
                 yOffset={8}
-                text={`Hi, I'm ${DATA.name.split(" ")[0]} 👋`}
+                text={`Hi, I'm ${DATA.name.split(" ")[0]} `}
               />
               <BlurFadeText
                 className="max-w-[600px] md:text-xl"
@@ -30,12 +31,7 @@ export default function Page() {
                 text={DATA.description}
               />
             </div>
-            <BlurFade delay={BLUR_FADE_DELAY}>
-              <Avatar className="size-28 border">
-                <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
-                <AvatarFallback>{DATA.initials}</AvatarFallback>
-              </Avatar>
-            </BlurFade>
+             
           </div>
         </div>
       </section>
@@ -49,6 +45,11 @@ export default function Page() {
           </Markdown>
         </BlurFade>
       </section>
+     {/*
+      <section id="github">
+        <GitHubCalendarWrapper  />
+      </section>
+      */}
       <section id="work">
         <div className="flex min-h-0 flex-col gap-y-3">
           <BlurFade delay={BLUR_FADE_DELAY * 5}>
@@ -160,16 +161,13 @@ export default function Page() {
                 <div className="inline-block rounded-lg bg-foreground text-background px-3 py-1 text-sm">
                   Hackathons
                 </div>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  I like building things
-                </h2>
+               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
+  I love hackathons for the free food <br /> (& ofcourse, the building)
+</h2>
+
                 <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   During my time in university, I attended{" "}
-                  {DATA.hackathons.length}+ hackathons. People from around the
-                  country would come together and build incredible things in 2-3
-                  days. It was eye-opening to see the endless possibilities
-                  brought to life by a group of motivated and passionate
-                  individuals.
+                  {DATA.hackathons.length}+ hackathons.Shipping under tight deadlines is something I love.
                 </p>
               </div>
             </div>
