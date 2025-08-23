@@ -10,6 +10,7 @@ import {
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { FileText } from "lucide-react"; // Import an icon for the resume
 
 export default function Navbar() {
   return (
@@ -36,6 +37,29 @@ export default function Navbar() {
             </Tooltip>
           </DockIcon>
         ))}
+        
+        {/* Resume Tab */}
+        <DockIcon>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="https://drive.google.com/file/d/1YrSuz4DPZ1mpS1xKSAUICPn2RvmdgHu2/view?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  buttonVariants({ variant: "ghost", size: "icon" }),
+                  "size-12"
+                )}
+              >
+                <FileText className="size-4" />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Resume</p>
+            </TooltipContent>
+          </Tooltip>
+        </DockIcon>
+
         <Separator orientation="vertical" className="h-full" />
         {Object.entries(DATA.contact.social)
           .filter(([_, social]) => social.navbar)
