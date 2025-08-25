@@ -69,9 +69,7 @@ export default function RootLayout({
           </TooltipProvider>
        
         </ThemeProvider>
-
-      </body>
-         <Databuddy
+  <Databuddy
   clientId="3A-qjsC3nkH0U1yx830zU"
             enableBatching={true}
           trackScreenViews={true} // Track page/route changes
@@ -84,6 +82,8 @@ export default function RootLayout({
           trackScrollDepth={false} // Track scroll behavior
           trackEngagement={false} // Track user engagement
 />
+      </body>
+       
     </html>
   );
 }
