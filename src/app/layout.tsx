@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
+import { Databuddy } from '@databuddy/sdk/react';
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -66,6 +67,19 @@ export default function RootLayout({
             {children}
             <Navbar />
           </TooltipProvider>
+          <Databuddy
+  clientId="3A-qjsC3nkH0U1yx830zU"
+            enableBatching={true}
+          trackScreenViews={true} // Track page/route changes
+          trackPerformance={true} // Track loading times
+          trackWebVitals={true} // Track Core Web Vitals
+          trackErrors={true} // Track JavaScript errors
+          // Optional tracking (enable as needed)
+          trackSessions={true} // Track user sessions
+          trackOutgoingLinks={false} // Track external link clicks
+          trackScrollDepth={false} // Track scroll behavior
+          trackEngagement={false} // Track user engagement
+/>
         </ThemeProvider>
       </body>
     </html>
