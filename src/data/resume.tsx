@@ -141,7 +141,7 @@ export const DATA = {
         },
       ],
       image: "/transcriptgenie.png",
-      
+      video: "",
     },
     {
       title: "MicroQuery",
@@ -162,8 +162,8 @@ export const DATA = {
           icon: <Icons.globe className="size-3" />,
         },
       ],
-      
       image: "/microquery.png",
+      video: "",
     },
     {
       title: "We are not really Strangers",
