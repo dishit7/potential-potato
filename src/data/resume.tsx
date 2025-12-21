@@ -141,7 +141,7 @@ export const DATA = {
         },
       ],
       image: "/transcriptgenie.png",
-      video: "",
+      
     },
     {
       title: "MicroQuery",
