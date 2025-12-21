@@ -10,7 +10,7 @@ export const DATA = {
   description:
      "FullStack AI Engineer |0.1x Developer",
   summary: "I am currenly working as an SDE-I at Axentia, I love building things, exploring everything tech, and of course, food 🍜",
-  avatarUrl: "/dishit_photo.png", // Update with your actual avatar path
+  avatarUrl: "/gohan_photo.png", // Update with your actual avatar path
   skills: [
     "JavaScript",
     "TypeScript",
@@ -120,6 +120,68 @@ export const DATA = {
 
   projects: [
     {
+      title: "TranscriptGenie",
+      href: "https://transcriptgenie.com", // update with actual URL
+      dates: "2025", // adjust dates
+      tags: ["Collaborative", "B2B", "Active"],
+      description: "Collaborated on a B2B SaaS platform that converts international marksheets to US grading scales for educational institutions. Contributed key infrastructure components including Apache Kafka implementation for scalable document processing pipelines and Azure VPS deployment with self-managed Kafka clusters. Built custom grading scales feature and implemented Server-Sent Events (SSE) for real-time batch upload progress tracking.",
+      technologies: [
+        "Apache Kafka",
+        "Azure VPS",
+        "Server-Sent Events",
+        "Document Processing",
+        "Next.js",
+        "TypeScript"
+      ],
+      links: [
+        {
+          type: "Website",
+          href: "https://transcriptgenie.com",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "/transcriptgenie.png",
+      video: "",
+    },
+    {
+      title: "MicroQuery",
+      href: "https://microquery.ai",
+      description: "MicroQuery AI is a t3 chat alternative that provides u access to multiple different llm model providers in one place and allows u to continue chat thread without switching to different providers and helps u get access to multiple models in one subscription",
+      technologies: [
+        "TypeScript",
+        "Next.js",
+        "Vercel AI SDK",
+        "PostgreSQL",
+      ],
+      links: [
+        {
+          type: "Website",
+          href: "https://microquery.ai", // Update with actual URL
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "/microquery.png",
+    },
+    {
+      title: "We are not really Strangers",
+      href: "https://wrnrs-web.vercel.app/",
+      description: "We are not really strangers is a online multiplayer game it is a Web Based version of the real life card game we are not really strangers.",
+      technologies: [
+        "TypeScript",
+        "WebSockets",
+        "Turbo Repo",
+      ],
+      image: "/wrnrs.png",
+      video: "",
+      links: [
+        {
+          type: "Website",
+          href: "https://wrnrs-web.vercel.app/", // Update with actual URL
+          icon: <Icons.globe className="size-3" />,
+        },
+      ]
+    },
+    {
       title: "CommSphere",
       href: "https://commsphere.live", // Update with actual live URL
       dates: "July 2024 - Present",
@@ -224,30 +286,7 @@ export const DATA = {
       
        ],
     
-},{
-  title: "TranscriptGenie",
-  href: "https://transcriptgenie.com", // update with actual URL
-  dates: "2025", // adjust dates
-  tags: ["Collaborative", "B2B", "Active"],
-  description: "Collaborated on a B2B SaaS platform that converts international marksheets to US grading scales for educational institutions. Contributed key infrastructure components including Apache Kafka implementation for scalable document processing pipelines and Azure VPS deployment with self-managed Kafka clusters. Built custom grading scales feature and implemented Server-Sent Events (SSE) for real-time batch upload progress tracking.",
-  technologies: [
-    "Apache Kafka",
-    "Azure VPS", 
-    "Server-Sent Events",
-    "Document Processing",
-    "Next.js",
-    "TypeScript"
-  ],
-  links: [
-    {
-      type: "Website",
-      href: "https://transcriptgenie.com",
-      icon: <Icons.globe className="size-3" />,
-    },
-  ],
-  image: "/transcriptgenie.png",
-  video: "",
-}
+},
   ],
 
   hackathons: [

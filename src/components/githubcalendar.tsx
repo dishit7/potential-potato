@@ -20,10 +20,10 @@ const THEMES = {
 };
 
 interface GitHubCalendarWrapperProps {
-  username: string;
+  username?: string;
 }
 
-const GitHubCalendarWrapper: React.FC<GitHubCalendarWrapperProps> = ({ username }) => {
+const GitHubCalendarWrapper: React.FC<GitHubCalendarWrapperProps> = ({ username = "dishit7" }) => {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const { theme = 'light' } = useTheme();
 
@@ -37,6 +37,18 @@ const GitHubCalendarWrapper: React.FC<GitHubCalendarWrapperProps> = ({ username 
     const timeoutId = setTimeout(scrollToRightmost, 500);
     return () => clearTimeout(timeoutId);
   }, []);
+
+  // Filter contributions from March to December
+  const transformData = (contributions: any) => {
+    const currentYear = new Date().getFullYear();
+    const marchStart = new Date(currentYear, 2, 1); // March 1st (month is 0-indexed)
+    const decemberEnd = new Date(currentYear, 11, 31); // December 31st
+
+    return contributions.filter((day: any) => {
+      const date = new Date(day.date);
+      return date >= marchStart && date <= decemberEnd;
+    });
+  };
 
   const themeColors = {
     [theme === 'dark' ? 'dark' : 'light']: THEMES[theme === 'dark' ? 'dark' : 'light']
@@ -56,10 +68,10 @@ const GitHubCalendarWrapper: React.FC<GitHubCalendarWrapperProps> = ({ username 
     >
       <div style={{ display: 'inline-block' }}> 
         <GitHubCalendar 
-          username={username} 
-          // theme={themeColors as ThemeInput}
+          username={username}
+          transformData={transformData}
           fontSize={12} 
-          blockRadius={3}
+          blockRadius={2}
           blockSize={14}
           blockMargin={3}
           colorScheme={theme === 'dark' ? 'dark' : 'light'}
@@ -77,4 +89,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default GitHubCalendarWrapper;

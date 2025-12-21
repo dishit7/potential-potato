@@ -9,13 +9,16 @@ import { DATA } from "@/data/resume";
 import Link from "next/link";
 import Markdown from "react-markdown";
 import GitHubCalendarWrapper from "@/components/githubcalendar";
+import Image from "next/image";
 
 const BLUR_FADE_DELAY = 0.04;
 
 export default function Page() {
   return (
     <main className="flex flex-col min-h-[100dvh] space-y-10">
+       
       <section id="hero">
+      
         <div className="mx-auto w-full max-w-2xl space-y-8">
           <div className="gap-2 flex justify-between">
             <div className="flex-col flex flex-1 space-y-1.5">
@@ -31,9 +34,15 @@ export default function Page() {
                 text={DATA.description}
               />
             </div>
-             
+               <BlurFade delay={BLUR_FADE_DELAY}>
+          <Avatar className="size-32 border">
+            <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
+            <AvatarFallback>{DATA.initials}</AvatarFallback>
+          </Avatar>
+        </BlurFade>
           </div>
         </div>
+      
       </section>
       <section id="about">
         <BlurFade delay={BLUR_FADE_DELAY * 3}>
@@ -116,7 +125,7 @@ export default function Page() {
         <div className="space-y-12 w-full py-12">
           <BlurFade delay={BLUR_FADE_DELAY * 11}>
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
+               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-foreground text-background px-3 py-1 text-sm">
                   My Projects
                 </div>
