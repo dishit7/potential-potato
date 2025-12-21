@@ -122,7 +122,7 @@ export const DATA = {
     {
       title: "TranscriptGenie",
       href: "https://transcriptgenie.com", // update with actual URL
-      dates: "2025", // adjust dates
+      dates: "Feb 2025-Present", // adjust dates
       tags: ["Collaborative", "B2B", "Active"],
       description: "Collaborated on a B2B SaaS platform that converts international marksheets to US grading scales for educational institutions. Contributed key infrastructure components including Apache Kafka implementation for scalable document processing pipelines and Azure VPS deployment with self-managed Kafka clusters. Built custom grading scales feature and implemented Server-Sent Events (SSE) for real-time batch upload progress tracking.",
       technologies: [
@@ -145,7 +145,9 @@ export const DATA = {
     },
     {
       title: "MicroQuery",
+    
       href: "https://microquery.ai",
+      dates:"August 2025-Present",
       description: "MicroQuery AI is a t3 chat alternative that provides u access to multiple different llm model providers in one place and allows u to continue chat thread without switching to different providers and helps u get access to multiple models in one subscription",
       technologies: [
         "TypeScript",
@@ -160,11 +162,13 @@ export const DATA = {
           icon: <Icons.globe className="size-3" />,
         },
       ],
+      
       image: "/microquery.png",
     },
     {
       title: "We are not really Strangers",
       href: "https://wrnrs-web.vercel.app/",
+      dates:"October 2025 -Present",
       description: "We are not really strangers is a online multiplayer game it is a Web Based version of the real life card game we are not really strangers.",
       technologies: [
         "TypeScript",
