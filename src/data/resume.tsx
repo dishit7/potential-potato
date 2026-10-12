@@ -35,7 +35,7 @@ export const DATA = {
   ],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
-    { href: "https://medium.com/@hanmadishit74/what-366-commits-taught-me-this-year-9d9f380e6b5c", icon: NotebookIcon, label: "Blog" },
+    { href: "/blog", icon: NotebookIcon, label: "Blog" },
   ],
   contact: {
     email: "hanmadishit74@gmail.com",

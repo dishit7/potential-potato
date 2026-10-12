@@ -34,3 +34,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# private blog posts (served behind an access code; not for the public repo)
+private-posts/tools.html

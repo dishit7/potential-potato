@@ -1,6 +1,5 @@
 import BlurFade from "@/components/magicui/blur-fade";
-import { getBlogPosts } from "@/data/blog";
-import Link from "next/link";
+import { OFFGRID_POSTS } from "@/data/offgrid-posts";
 
 export const metadata = {
   title: "Blog",
@@ -9,8 +8,19 @@ export const metadata = {
 
 const BLUR_FADE_DELAY = 0.04;
 
+const MEDIUM_POST = {
+  title: "What 366 Commits Taught Me This Year",
+  href: "https://medium.com/@hanmadishit74/what-366-commits-taught-me-this-year-9d9f380e6b5c",
+};
+
 export default async function BlogPage() {
-  const posts = await getBlogPosts();
+  const posts = [
+    ...OFFGRID_POSTS.map((p) => ({
+      slug: p.slug,
+      metadata: { title: p.title, publishedAt: p.publishedAt },
+      private: p.private,
+    })),
+  ];
 
   return (
     <section>
@@ -28,7 +38,7 @@ export default async function BlogPage() {
         })
         .map((post, id) => (
           <BlurFade delay={BLUR_FADE_DELAY * 2 + id * 0.05} key={post.slug}>
-            <Link
+            <a
               className="flex flex-col space-y-1 mb-4"
               href={`/blog/${post.slug}`}
             >
@@ -36,11 +46,25 @@ export default async function BlogPage() {
                 <p className="tracking-tight">{post.metadata.title}</p>
                 <p className="h-6 text-xs text-muted-foreground">
                   {post.metadata.publishedAt}
+                  {post.private ? " · 🔒 private, request access" : ""}
                 </p>
               </div>
-            </Link>
+            </a>
           </BlurFade>
         ))}
+      <BlurFade delay={BLUR_FADE_DELAY * 2 + posts.length * 0.05}>
+        <a
+          className="flex flex-col space-y-1 mb-4"
+          href={MEDIUM_POST.href}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div className="w-full flex flex-col">
+            <p className="tracking-tight">{MEDIUM_POST.title}</p>
+            <p className="h-6 text-xs text-muted-foreground">on Medium ↗</p>
+          </div>
+        </a>
+      </BlurFade>
     </section>
   );
 }

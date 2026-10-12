@@ -1,0 +1,540 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Two Engines, One App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,700;1,8..60,400&family=JetBrains+Mono:wght@400;600&family=Architects+Daughter&display=swap">
+<style>
+  /* Layout: one narrow serif reading column on warm paper, with hand-sketched diagrams between sections. Single light look on purpose. */
+  :root {
+    --paper: #fcebd6;
+    --ink: #1e1e1e;
+    --muted: #78716c;
+    --rule: #e3c6a3;
+    --code-bg: #f6dcbc;
+    --box: #fff7ed;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+    --hand: "Architects Daughter", "Comic Sans MS", "Segoe Print", cursive;
+    color-scheme: light;
+  }
+  body { background: var(--paper); color: var(--ink); font-family: var(--serif); font-size: 18px; line-height: 1.65; }
+  .wrap { max-width: 720px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 80px; }
+
+  nav h1 { font-size: 2rem; font-weight: 400; margin: 0; }
+  nav .links { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 14px; font-family: system-ui, sans-serif; font-size: 15px; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 12px 0 0; }
+
+  .stats { margin: 22px 0 6px; }
+  .head { display: flex; align-items: center; gap: 18px; margin: 32px 0 10px; }
+  .head .mark { flex: none; width: clamp(52px, 11vw, 76px); height: auto; aspect-ratio: 1; margin: 0; }
+  .head .title { margin: 0; }
+  .back { display: inline-block; font-family: system-ui, sans-serif; font-size: 15px; color: var(--muted); text-decoration: none; }
+  .back:hover { color: var(--ink); text-decoration: underline; }
+  .title { font-size: clamp(2.3rem, 8vw, 3.4rem); font-weight: 700; line-height: 1.08; letter-spacing: -0.015em; margin: 32px 0 10px; text-wrap: balance; }
+  .title .sub { display: block; font-size: clamp(1.15rem, 3.6vw, 1.45rem); font-weight: 400; font-style: italic; line-height: 1.35; letter-spacing: 0; color: var(--muted); margin-top: 12px; }
+  .date { font-family: system-ui, sans-serif; font-size: 14px; color: var(--muted); }
+  .lead { font-size: 1.15rem; margin-top: 16px; }
+
+  h2 { font-size: 1.5rem; font-weight: 400; margin: 44px 0 0; text-wrap: balance; }
+  p { margin: 14px 0 0; }
+  b { font-weight: 700; }
+  .ask { font-style: italic; color: #44403c; }
+  ul { margin: 14px 0 0; padding-left: 24px; display: grid; gap: 6px; }
+
+  code { font-family: var(--mono); font-size: 0.8em; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; }
+  pre { margin: 18px 0 0; background: var(--code-bg); padding: 14px 16px; border-radius: 4px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.55; }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  .c { color: #8a6d55; }
+
+  figure { margin: 36px 0 12px; }
+  .sketch { overflow-x: auto; }
+  .sketch svg { display: block; width: 100%; min-width: 540px; height: auto; }
+  .hand { font-family: var(--hand); }
+  figcaption { font-family: var(--hand); font-size: 15px; color: var(--muted); margin-top: 8px; text-align: center; }
+
+  .trail { overflow-x: auto; margin-top: 16px; }
+  .trail table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 15.5px; line-height: 1.45; }
+  .trail th { font-family: var(--hand); font-weight: 400; color: var(--muted); text-align: left; padding: 6px 10px; border-bottom: 2px solid var(--ink); }
+  .trail td { padding: 9px 10px; border-bottom: 1px dashed var(--rule); vertical-align: top; }
+  .trail td:first-child { font-family: var(--mono); font-size: 13px; font-weight: 600; color: #c2412d; white-space: nowrap; }
+  .trail td:nth-child(2) { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .rules { margin-top: 6px; }
+
+  /* v2: diffs, user voices, "what didn't work", case cards, decision tables */
+  pre.diff .del { color: #a3281a; background: #f7d3c8; display: inline-block; min-width: 100%; }
+  pre.diff .add { color: #1f6b40; background: #d9eedf; display: inline-block; min-width: 100%; }
+  .voice { margin: 20px 0 0; padding: 4px 0 4px 18px; border-left: 3px solid var(--rule); font-style: italic; }
+  .voice p { margin: 0; }
+  .voice cite { display: block; margin-top: 6px; font-family: var(--hand); font-style: normal; font-size: 14px; color: var(--muted); }
+  .opener { margin: 22px 0 0; background: #1e1e1e; color: #f3e6d6; padding: 14px 16px; border-radius: 4px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.6; }
+  .opener .hl { color: #ff9b85; }
+  .tried { list-style: none; padding-left: 0; }
+  .tried li { position: relative; padding-left: 30px; }
+  .tried li::before { content: "✗"; position: absolute; left: 4px; top: 0; color: #c2412d; font-weight: 700; }
+  .case { margin-top: 20px; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; font-size: 16px; line-height: 1.5; }
+  .case dt { font-family: var(--hand); color: var(--muted); padding-top: 1px; }
+  .case dd { margin: 0; min-width: 0; }
+  .memo { overflow-x: auto; margin-top: 16px; }
+  .memo table { width: 100%; min-width: 540px; border-collapse: collapse; font-size: 15px; line-height: 1.45; }
+  .memo th { font-family: var(--hand); font-weight: 400; color: var(--muted); text-align: left; padding: 6px 10px; border-bottom: 2px solid var(--ink); }
+  .memo td { padding: 9px 10px; border-bottom: 1px dashed var(--rule); vertical-align: top; }
+  .memo td:first-child { font-weight: 700; white-space: nowrap; }
+  .memo tr.pick td { background: #e3efe6; }
+  .eyebrow { font-family: var(--hand); color: #c2412d; font-size: 15px; margin: 44px 0 -36px; }
+
+  @media (max-width: 520px) {
+    body { font-size: 17px; }
+    .case { grid-template-columns: 1fr; gap: 2px; }
+    .case dd { margin-bottom: 8px; }
+  }
+</style>
+
+<div class="wrap">
+  <a class="back" href="/blog">← All posts</a>
+  <div class="head">
+  <svg class="mark" id="d-mark" role="img" aria-hidden="true"></svg>
+    <h1 class="title">Two Engines, One App<span class="sub">Why We Bet on the Phone's GPU</span></h1>
+  </div>
+  <span class="date">29th September, 2026</span>
+
+  <figure class="stats">
+    <div class="sketch"><svg id="d-stats" role="img" aria-label="v0.0.95 second engine added; 0 layers GPU offload by default; 38–41 chars/sec on the GPU"></svg></div>
+  </figure>
+
+  <div class="voice">
+    <p>"On google's app google edge gallery i could got a 1000tps prefill and 28tps decode speed on gemma4 e2b … [in Off Grid I] got a very slow generation speed about 2 tokens per second."</p>
+    <cite>GitHub issue #229 · Snapdragon 8 Gen 3, 16 GB · 4 April</cite>
+  </div>
+
+  <p class="lead">Same phone, same model family, <b>14× slower</b> in our app than in Google's. The user had even set the GPU to its maximum, "opencl 99". A follow-up two weeks later: "The GPU toggle makes <b>zero difference</b> even at 99 Layers." That issue is where this decision started. This post is written as a <b>decision memo</b>: the context, the options, what we chose, what it cost, and what we found when we checked the decision again a month later.</p>
+
+  <h2>Context : three chips, one engine</h2>
+
+  <p>A phone has three places to run a model, and they are good at different things:</p>
+
+  <figure>
+    <div class="sketch"><svg id="d-chips" role="img" aria-label="CPU: a few strong cores, runs anything, slowest for AI. GPU: hundreds of small cores, fast at matrix math, on every phone. NPU: fastest per watt, but each chip maker has its own SDK and models must be compiled per chip."></svg></div>
+  </figure>
+
+  <p>In April, Off Grid had one engine: <b>llama.cpp</b>, through llama.rn. It runs almost any model file and it's great on iPhones, where it uses Metal. Our April audit of Android found something else:</p>
+
+  <ul>
+    <li><b>CPU by default.</b> GPU (OpenCL) offload was <b>0 layers</b> out of the box, capped at 12 to 24 even when users asked for more.</li>
+    <li><b>GPU crashes.</b> OpenCL with a quantized KV cache crashed on Adreno 740 phones on Android 15: <b>dozens of crash events</b> in a month.</li>
+    <li><b>Narrow support.</b> GPU and NPU acceleration covered only <code>Q4_0</code> and <code>Q8_0</code> files. Others <b>silently fell back</b> to the CPU, while the UI still said "99L".</li>
+    <li><b>A rebuild tax.</b> On Android GPU, context shifting is off because it crashes the Adreno backend, so once the context fills, the KV cache is rebuilt in full on every message.</li>
+    <li><b>An unused NPU.</b> We shipped Qualcomm Hexagon libraries that were never turned on.</li>
+  </ul>
+
+  <div class="voice">
+    <p>"Silent CPU Fallback and Misleading UI Layer Count (99L) on Failed OpenCL Init … the phone runs completely cool."</p>
+    <cite>GitHub issue #373 · Adreno 613 · May</cite>
+  </div>
+
+  <h2>Options on the table in May</h2>
+
+  <div class="memo">
+    <table>
+      <thead><tr><th>Option</th><th>For</th><th>Against</th><th>Outcome</th></tr></thead>
+      <tbody>
+        <tr><td>Tune llama.rn's GPU path</td><td>One engine, every model file</td><td>Crashes, quant limits, silent fallback</td><td>Kept, and still improving</td></tr>
+        <tr class="pick"><td>Add LiteRT-LM</td><td>The engine Google's Edge Gallery uses, built for mobile GPUs</td><td>Android only, few models, new native code</td><td><b>Chosen, as a second engine</b></td></tr>
+        <tr><td>Hexagon NPU via llama.rn</td><td>Fastest per watt on paper</td><td>Per-chip, unproven on our models</td><td>Tried later; see below</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Decision : add a second engine, GPU first</h2>
+
+  <p>We added Google's <b>LiteRT-LM</b> next to llama.rn and left the llama path <b>untouched</b>. It shipped in <b>v0.0.95</b> on 4 June. The rule for which engine runs is simple: the <b>file format</b> decides. A <code>.gguf</code> runs on llama.rn, a <code>.litertlm</code> runs on LiteRT. The engine is stored on the model once, at download or import.</p>
+
+  <figure>
+    <div class="sketch"><svg id="d-route" role="img" aria-label="A gguf file goes to llama.rn. A litertlm file goes to LiteRT-LM and runs on the GPU first."></svg></div>
+  </figure>
+
+<pre><code><span class="c">// src/services/activeModelService/loaders.ts</span>
+export async function doLoadTextModel(ctx: TextLoadContext): Promise&lt;void&gt; {
+  <span class="c">// Route LiteRT models to the LiteRT loader — existing llama path is untouched below</span>
+  if (ctx.model.engine === 'litert') {
+    return doLoadLiteRTModel(ctx);
+  }</code></pre>
+
+  <p>Inside the native module, every load builds a <b>fallback chain</b>: NPU, then GPU, then CPU. The settings screen offers only <b>GPU</b> (the default) and <b>CPU</b>. The GPU gets two retries 600 ms apart, because the previous model's video memory isn't always released yet, and a short <b>warm-up</b> after loading primes the GPU's shader cache, about <b>0.9 s</b> on our test phone.</p>
+
+  <figure>
+    <div class="sketch"><svg id="d-chain" role="img" aria-label="Clamp the context to free RAM, load on GPU with two retries 600 ms apart, warm up the shaders, then ready. If the GPU fails, fall back to CPU."></svg></div>
+  </figure>
+
+  <h2>What about iOS?</h2>
+
+  <p>When we built this, Google's note was: "iOS Swift SDK: <b>not released yet</b>, Coming Soon." Our plan had a stand-in, MediaPipe's LLM Inference API, which we deferred. So on iPhone, Off Grid still runs llama.rn with <b>Metal</b>, which is fast there, and Core ML for image generation. Users noticed the gap:</p>
+
+  <div class="voice">
+    <p>"Backend parity between Android and iOS … No LiteRT references … Existing support for: llama.cpp / llama.rn, ExecuTorch, Whisper, Core ML Stable Diffusion."</p>
+    <cite>GitHub issue #426 · June</cite>
+  </div>
+
+  <h2>Consequences : what didn't work</h2>
+
+  <p>A second engine means a second set of failure modes. In order:</p>
+
+  <ul class="tried">
+    <li><b>The SDK's own benchmark.</b> We exposed its stats one day, and replaced them the next: <code>getBenchmarkInfo()</code> needs internal parameters the public API doesn't expose. We time it ourselves now. Then the time-to-first-token unit <b>flipped twice</b>: multiply by 1,000, then remove the multiply, because it was already in seconds.</li>
+    <li><b>A compaction death spiral.</b> LiteRT keeps the chat in native memory, so we summarise ("compact") it at <b>65%</b> of context. Our estimate counted the full chat history and ignored that native memory was already compacted, so it compacted <b>on every turn</b>. The fix targets 45% after compaction.</li>
+    <li><b>A CPU option that doesn't work.</b> Our model files fail on the CPU backend with "Status Code: 13". They appear to be built for the GPU. The option is still in settings.</li>
+    <li><b>One phone, no GPU.</b> On the Pixel 10, GPU start-up crashed with an uncatchable native abort. Those phones now see: "GPU acceleration is not yet supported on Pixel 10. Models will run on CPU."</li>
+    <li><b>Vision on the wrong chip.</b> Forcing GPU vision while the main model fell back to CPU crashed inside the Mali GPU driver. Vision now follows the main backend.</li>
+    <li><b>Out of memory, then too careful.</b> Asking for too large a context crashed engine creation, so we clamped it to free RAM (v0.0.101). On a mid-range phone that clamp cut a 4,096-token request to <b>880</b>, too small for tool schemas. A fix that trusts the budget the app already checked is in testing.</li>
+  </ul>
+
+  <figure>
+    <div class="sketch"><svg id="d-clamp" role="img" aria-label="Requested context 4096 tokens. With about 2.6 GB free and a 2.5 GB model, the native clamp granted 880 tokens."></svg></div>
+    <figcaption>The clamp: free RAM minus the model, divided by about 0.15 MB per token.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="sketch"><svg id="d-state" role="img" aria-label="llama.rn is stateless: the app sends the whole history every message. LiteRT is stateful: the conversation lives in native code, the app sends only the new message, and any change to tools or the system prompt resets it."></svg></div>
+    <figcaption>LiteRT keeps the chat in native memory. Faster per turn, harder to manage.</figcaption>
+  </figure>
+
+  <p>And the biggest cost: its <b>teardown crash</b> became our top Android crash. We wrote that case up separately.</p>
+
+  <h2>The numbers we have, and the ones we don't</h2>
+
+  <p>On a <b>Snapdragon 8s Gen 3</b> test phone with Gemma 4 E2B, a GPU load took about <b>17 to 18 s</b>. A CPU load took <b>9.8 s</b>, then failed to generate (Status 13), so "CPU loads faster" helps no one. An early test on the GPU showed about <b>7 s</b> to the first token and <b>38 to 41 characters</b> per second. On the same phone, llama.rn's "GPU" mode capped its layers from 99 to 24 and kept most of the model in CPU memory: <b>230 MB</b> on OpenCL against about <b>2 GB</b> on the CPU side.</p>
+
+  <figure>
+    <div class="sketch"><svg id="d-load" role="img" aria-label="Load time on a Snapdragon 8s Gen 3 with Gemma 4 E2B: GPU 17.9 and 17.2 seconds, both worked. CPU 9.8 seconds, then failed to generate with Status 13."></svg></div>
+  </figure>
+
+  <p>What we <b>don't</b> have is a clean, same-phone, same-prompt comparison of llama.rn on CPU, llama.rn on GPU and LiteRT on GPU. Our model card says "up to 2x faster than CPU via GPU", and we'd rather prove that than repeat it. That benchmark is the next thing we're figuring out.</p>
+
+  <h2>Review : the decision, one month later</h2>
+
+  <p>In July we wrote an <b>acceleration strategy</b> and checked the decision against everything else out there. One rule framed it: an option must have a <b>React Native binding</b> today, because "only shipping capabilities count, not roadmap".</p>
+
+  <div class="memo">
+    <table>
+      <thead><tr><th>Option</th><th>What we found in July</th></tr></thead>
+      <tbody>
+        <tr><td>MLC LLM</td><td>GPU only</td></tr>
+        <tr><td>MediaPipe LLM</td><td>GPU and CPU, now maintenance-only</td></tr>
+        <tr><td>ExecuTorch</td><td>CPU on Android; a Qualcomm backend PR was closed unmerged</td></tr>
+        <tr><td>Cactus</td><td>No Android NPU in the open source repo</td></tr>
+        <tr><td>NexaSDK</td><td>No React Native binding</td></tr>
+        <tr><td>LiteRT NPU</td><td>Needs per-chip vendor binaries; samplers rejected on NPU</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>We also tried the NPU for real. We switched llama's Hexagon path back on in July and tested every engine on every backend on one phone:</p>
+
+  <figure>
+    <div class="sketch"><svg id="d-matrix" role="img" aria-label="Backend matrix on a Snapdragon 8s Gen 3: llama gguf works on CPU and GPU, and on NPU it loads but outputs gibberish. LiteRT works on GPU, fails on CPU with status 13, and NPU is not offered."></svg></div>
+    <figcaption>Two engines, three backends, one phone. Only the GPU column is all green.</figcaption>
+  </figure>
+
+  <p>On the NPU, llama <b>loaded cleanly and produced gibberish</b> with Gemma 4, while OpenCL ran the same model correctly. On a Snapdragon 8+ Gen 1, a user hit <code>Process on cDSP CRASHED!!!</code>. So the NPU ships as <b>"NPU (Beta)"</b>, described as best for Llama- and Qwen-style models. The review's verdict on text generation on the NPU: not now. The GPU is the accelerator <b>every Android phone has</b>, and both our engines can use it.</p>
+
+  <h2>What we'd revisit</h2>
+
+  <ul>
+    <li>A real <b>benchmark</b> before any more claims about speed.</li>
+    <li>LiteRT on <b>iOS</b>, once Google's Swift SDK ships.</li>
+    <li>The <b>NPU</b>, per chip, per model family, when it stops producing gibberish.</li>
+    <li>Whether the CPU option for LiteRT should be <b>hidden</b> until it works.</li>
+  </ul>
+
+  <h2>What we took away</h2>
+
+  <div class="rules">
+    <ul>
+      <li>Ship on the accelerator <b>every phone has</b>. On Android today, that's the <b>GPU</b>.</li>
+      <li>Let the <b>file format</b> pick the engine, and keep the old path untouched.</li>
+      <li>Always build a <b>way down</b>: GPU, retry, then CPU.</li>
+      <li>Test the <b>matrix</b>. "Loads fine" is not "works".</li>
+      <li>Review a decision <b>after</b> it ships. Ours held, and we learned why.</li>
+    </ul>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js"></script>
+<script>
+(function () {
+const ICONS = {"android": "M18.4395 5.5586c-.675 1.1664-1.352 2.3318-2.0274 3.498-.0366-.0155-.0742-.0286-.1113-.043-1.8249-.6957-3.484-.8-4.42-.787-1.8551.0185-3.3544.4643-4.2597.8203-.084-.1494-1.7526-3.021-2.0215-3.4864a1.1451 1.1451 0 0 0-.1406-.1914c-.3312-.364-.9054-.4859-1.379-.203-.475.282-.7136.9361-.3886 1.5019 1.9466 3.3696-.0966-.2158 1.9473 3.3593.0172.031-.4946.2642-1.3926 1.0177C2.8987 12.176.452 14.772 0 18.9902h24c-.119-1.1108-.3686-2.099-.7461-3.0683-.7438-1.9118-1.8435-3.2928-2.7402-4.1836a12.1048 12.1048 0 0 0-2.1309-1.6875c.6594-1.122 1.312-2.2559 1.9649-3.3848.2077-.3615.1886-.7956-.0079-1.1191a1.1001 1.1001 0 0 0-.8515-.5332c-.5225-.0536-.9392.3128-1.0488.5449zm-.0391 8.461c.3944.5926.324 1.3306-.1563 1.6503-.4799.3197-1.188.0985-1.582-.4941-.3944-.5927-.324-1.3307.1563-1.6504.4727-.315 1.1812-.1086 1.582.4941zM7.207 13.5273c.4803.3197.5506 1.0577.1563 1.6504-.394.5926-1.1038.8138-1.584.4941-.48-.3197-.5503-1.0577-.1563-1.6504.4008-.6021 1.1087-.8106 1.584-.4941z", "apple": "M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701", "atlassian": "M7.12 11.084a.683.683 0 00-1.16.126L.075 22.974a.703.703 0 00.63 1.018h8.19a.678.678 0 00.63-.39c1.767-3.65.696-9.203-2.406-12.52zM11.434.386a15.515 15.515 0 00-.906 15.317l3.95 7.9a.703.703 0 00.628.388h8.19a.703.703 0 00.63-1.017L12.63.38a.664.664 0 00-1.196.006z", "git": "M23.546 10.93L13.067.452c-.604-.603-1.582-.603-2.188 0L8.708 2.627l2.76 2.76c.645-.215 1.379-.07 1.889.441.516.515.658 1.258.438 1.9l2.658 2.66c.645-.223 1.387-.078 1.9.435.721.72.721 1.884 0 2.604-.719.719-1.881.719-2.6 0-.539-.541-.674-1.337-.404-1.996L12.86 8.955v6.525c.176.086.342.203.488.348.713.721.713 1.883 0 2.6-.719.721-1.889.721-2.609 0-.719-.719-.719-1.879 0-2.598.182-.18.387-.316.605-.406V8.835c-.217-.091-.424-.222-.6-.401-.545-.545-.676-1.342-.396-2.009L7.636 3.7.45 10.881c-.6.605-.6 1.584 0 2.189l10.48 10.477c.604.604 1.582.604 2.186 0l10.43-10.43c.605-.603.605-1.582 0-2.187", "github": "M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12", "githubactions": "M10.984 13.836a.5.5 0 0 1-.353-.146l-.745-.743a.5.5 0 1 1 .706-.708l.392.391 1.181-1.18a.5.5 0 0 1 .708.707l-1.535 1.533a.504.504 0 0 1-.354.146zm9.353-.147l1.534-1.532a.5.5 0 0 0-.707-.707l-1.181 1.18-.392-.391a.5.5 0 1 0-.706.708l.746.743a.497.497 0 0 0 .706-.001zM4.527 7.452l2.557-1.585A1 1 0 0 0 7.09 4.17L4.533 2.56A1 1 0 0 0 3 3.406v3.196a1.001 1.001 0 0 0 1.527.85zm2.03-2.436L4 6.602V3.406l2.557 1.61zM24 12.5c0 1.93-1.57 3.5-3.5 3.5a3.503 3.503 0 0 1-3.46-3h-2.08a3.503 3.503 0 0 1-3.46 3 3.502 3.502 0 0 1-3.46-3h-.558c-.972 0-1.85-.399-2.482-1.042V17c0 1.654 1.346 3 3 3h.04c.244-1.693 1.7-3 3.46-3 1.93 0 3.5 1.57 3.5 3.5S13.43 24 11.5 24a3.502 3.502 0 0 1-3.46-3H8c-2.206 0-4-1.794-4-4V9.899A5.008 5.008 0 0 1 0 5c0-2.757 2.243-5 5-5s5 2.243 5 5a5.005 5.005 0 0 1-4.952 4.998A2.482 2.482 0 0 0 7.482 12h.558c.244-1.693 1.7-3 3.46-3a3.502 3.502 0 0 1 3.46 3h2.08a3.503 3.503 0 0 1 3.46-3c1.93 0 3.5 1.57 3.5 3.5zm-15 8c0 1.378 1.122 2.5 2.5 2.5s2.5-1.122 2.5-2.5-1.122-2.5-2.5-2.5S9 19.122 9 20.5zM5 9c2.206 0 4-1.794 4-4S7.206 1 5 1 1 2.794 1 5s1.794 4 4 4zm9 3.5c0-1.378-1.122-2.5-2.5-2.5S9 11.122 9 12.5s1.122 2.5 2.5 2.5 2.5-1.122 2.5-2.5zm9 0c0-1.378-1.122-2.5-2.5-2.5S18 11.122 18 12.5s1.122 2.5 2.5 2.5 2.5-1.122 2.5-2.5zm-13 8a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0zm2 0a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0zm12 0c0 1.93-1.57 3.5-3.5 3.5a3.503 3.503 0 0 1-3.46-3.002c-.007.001-.013.005-.021.005l-.506.017h-.017a.5.5 0 0 1-.016-.999l.506-.017c.018-.002.035.006.052.007A3.503 3.503 0 0 1 20.5 17c1.93 0 3.5 1.57 3.5 3.5zm-1 0c0-1.378-1.122-2.5-2.5-2.5S18 19.122 18 20.5s1.122 2.5 2.5 2.5 2.5-1.122 2.5-2.5z", "google": "M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z", "googleplay": "M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594zM1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l11.155-11.087L1.337.924zm12.207 10.065l3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179l11.04 10.973zm0 2.067l-11 10.933c.298.036.612-.016.906-.183l13.324-7.54-3.23-3.21z", "huggingface": "M1.4446 11.5059c0 1.1021.1673 2.1585.4847 3.1563-.0378-.0028-.0691-.0058-.1058-.0058-.4209 0-.8015.16-1.0704.4512-.3454.3737-.4984.8335-.4316 1.293a1.576 1.576 0 0 0 .2148.5978c-.2319.1864-.4018.4456-.4844.7578-.0646.2448-.131.7543.2149 1.2794a1.4552 1.4552 0 0 0-.0625.1055c-.208.3923-.2207.8372-.0371 1.25.2783.6258.9696 1.1175 2.3126 1.6467.8356.3292 1.5988.5411 1.6056.543 1.1046.2847 2.104.4277 2.969.4277 1.4173 0 2.4754-.3849 3.1525-1.1446 1.538.2651 2.791.1403 3.592.006.6773.7555 1.7332 1.1387 3.1467 1.1387.8649 0 1.8643-.143 2.969-.4278.0068-.0019.77-.2138 1.6056-.543 1.343-.5292 2.0343-1.0208 2.3126-1.6466.1836-.4129.171-.8577-.037-1.25a1.4685 1.4685 0 0 0-.0626-.1056c.346-.525.2795-1.0346.2149-1.2793-.0826-.3122-.2525-.5714-.4844-.7579.11-.1816.1831-.3788.2148-.5977.0669-.4595-.0862-.9193-.4316-1.293-.2688-.2913-.6495-.4513-1.0704-.4513-.0209 0-.0376.0008-.0588.0018.3162-.9966.4846-2.0518.4846-3.1523 0-5.807-4.7362-10.5144-10.5789-10.5144-5.8426 0-10.5788 4.7073-10.5788 10.5144Zm10.5788-9.4831c5.2727 0 9.5476 4.246 9.5476 9.483a9.4201 9.4201 0 0 1-.2696 2.2365c-.0039-.0047-.0079-.011-.0117-.0156-.274-.3255-.6679-.5059-1.1075-.5059-.352 0-.714.1155-1.0763.3438-.2403.1517-.5058.422-.7793.7598-.2534-.3492-.608-.5832-1.0137-.6465a1.5174 1.5174 0 0 0-.2344-.0176c-.9263 0-1.4828.7993-1.6935 1.5177-.1046.2426-.6065 1.3482-1.3614 2.0978-1.1681 1.1601-1.4458 2.3534-.8396 3.6382-.843.1029-1.5836.0927-2.365-.006.5906-1.212.3626-2.4388-.8426-3.6322-.755-.7496-1.2568-1.8552-1.3614-2.0978-.2107-.7184-.7673-1.5177-1.6935-1.5177-.078 0-.1568.0054-.2344.0176-.4057.0633-.7604.2973-1.0137.6465-.2735-.3379-.539-.6081-.7794-.7598-.3622-.2283-.7243-.3438-1.0762-.3438-.4266 0-.8094.171-1.0821.4786a9.4208 9.4208 0 0 1-.2598-2.1936c0-5.237 4.2749-9.483 9.5475-9.483zM8.6443 7.0036c-.4838.0043-.9503.2667-1.1934.7227-.3536.6633-.1006 1.4873.5645 1.84.351.1862.4883-.5261.836-.6485.3107-.1095.841.399 1.0078.086.3536-.6634.1025-1.4874-.5625-1.84a1.3659 1.3659 0 0 0-.6524-.1602Zm6.8403 0c-.2199-.002-.4426.05-.6504.1602-.665.3526-.9181 1.1766-.5645 1.84.1669.313.6971-.1955 1.0079-.086.3476.1224.4867.8347.838.6485.6649-.3527.916-1.1767.5624-1.84-.243-.456-.7096-.7184-1.1934-.7227Zm-9.7565 1.418a.8768.8768 0 0 0-.877.877c0 .4846.3925.877.877.877a.8768.8768 0 0 0 .877-.877.8768.8768 0 0 0-.877-.877zm12.6434 0c-.4845 0-.879.3925-.879.877 0 .4846.3945.877.879.877a.8768.8768 0 0 0 .877-.877.8768.8768 0 0 0-.877-.877zM8.7927 11.459c-.179-.003-.2793.1107-.2793.416 0 .8097.3874 2.125 1.4279 2.924.207-.7123 1.3453-1.2832 1.5079-1.2012.2315.1167.2191.4417.6074.7266.3884-.285.374-.6098.6056-.7266.1627-.082 1.3009.4889 1.5079 1.2012 1.0404-.799 1.4278-2.1144 1.4278-2.924 0-1.2212-1.583.6402-3.5413.6485-1.4686-.0061-2.7266-1.0558-3.2639-1.0645zM4.312 14.4768c.5792.365 1.6964 2.2751 2.1056 3.0177.1371.2488.371.3536.582.3536.4188 0 .7465-.4138.0391-.9395-1.0636-.791-.6914-2.0846-.1836-2.1642a.4302.4302 0 0 1 .0664-.004c.4616 0 .666.7892.666.7892s.5959 1.4898 1.6213 2.508c.942.9356 1.062 1.703.4961 2.6661-.0164-.004-.0159.0236-.1484.2149-.1853.2673-.4322.4688-.7188.6152-.5062.2269-1.1397.2696-1.7833.2696-1.037 0-2.1017-.1824-2.6975-.336-.0293-.0075-3.6505-.9567-3.1916-1.8224.0771-.1454.2033-.2031.3633-.2031.6463 0 1.823.9551 2.3283.9551.113 0 .196-.0865.2285-.2031.2249-.8045-3.2787-1.0522-2.9846-2.1642.0519-.1967.193-.2757.3907-.2754.854 0 2.7704 1.4923 3.172 1.4923.0307 0 .0525-.0085.0645-.0274.2012-.3227.1096-.5865-1.3087-1.4395-1.4182-.8533-2.4315-1.329-1.8653-1.9416.0651-.0707.1574-.1015.2695-.1015.8611.0002 2.8948 1.84 2.8948 1.84s.5487.5683.8809.5683c.0762 0 .1416-.0315.1855-.1054.2355-.3946-2.1858-2.2183-2.3224-2.971-.0926-.51.0641-.7676.3555-.7676-.0006.008.1701-.0285.4942.1759zm16.2257.5918c-.1366.7526-2.5579 2.5764-2.3224 2.9709.044.074.1092.1055.1855.1055.3321 0 .881-.5684.881-.5684s2.0336-1.8397 2.8947-1.84c.1121 0 .2044.0308.2695.1016.5662.6125-.447 1.0882-1.8653 1.9415-1.4183.853-1.51 1.1168-1.3087 1.4396.012.0188.0337.0273.0644.0273.4016 0 2.3181-1.4923 3.1721-1.4923.1977-.0002.3388.0787.3907.2754.294 1.112-3.2095 1.3597-2.9846 2.1642.0325.1166.1156.2032.2285.2032.5054 0 1.682-.9552 2.3283-.9552.16 0 .2862.0577.3633.2032.459.8656-3.1623 1.8149-3.1916 1.8224-.5958.1535-1.6605.336-2.6975.336-.6351 0-1.261-.0409-1.7638-.2599-.2949-.1472-.5488-.3516-.7383-.625-.0411-.0682-.1026-.1476-.1426-.205-.5726-.9679-.455-1.7371.4903-2.676 1.0254-1.0182 1.6212-2.508 1.6212-2.508s.2044-.7891.666-.7891a.4318.4318 0 0 1 .0665.0039c.5078.0796.88 1.3732-.1836 2.1642-.7074.5257-.3797.9395.039.9395.211 0 .445-.1047.5821-.3535.4092-.7426 1.5264-2.6527 2.1056-3.0178.5588-.3524.99-.1816.8497.5918z", "jest": "M22.251 11.82a3.117 3.117 0 0 0-2.328-3.01L22.911 0H8.104L11.1 8.838a3.116 3.116 0 0 0-2.244 2.988c0 1.043.52 1.967 1.313 2.536a8.279 8.279 0 0 1-1.084 1.244 8.14 8.14 0 0 1-2.55 1.647c-.834-.563-1.195-1.556-.869-2.446a3.11 3.11 0 0 0-.91-6.08 3.117 3.117 0 0 0-3.113 3.113c0 .848.347 1.626.903 2.182-.048.097-.097.195-.146.299-.465.959-.993 2.043-1.195 3.259-.403 2.432.257 4.384 1.849 5.489A5.093 5.093 0 0 0 5.999 24c1.827 0 3.682-.917 5.475-1.807 1.279-.632 2.599-1.292 3.898-1.612.48-.118.98-.187 1.508-.264 1.07-.153 2.175-.312 3.168-.89a4.482 4.482 0 0 0 2.182-3.091c.174-.994 0-1.994-.444-2.87.298-.48.465-1.042.465-1.647zm-1.355 0c0 .965-.785 1.75-1.75 1.75a1.753 1.753 0 0 1-1.085-3.126l.007-.007c.056-.042.118-.084.18-.125 0 0 .008 0 .008-.007.028-.014.055-.035.083-.05.007 0 .014-.006.021-.006.028-.014.063-.028.097-.042.035-.014.07-.027.098-.041.007 0 .013-.007.02-.007.028-.007.056-.021.084-.028.007 0 .02-.007.028-.007.034-.007.062-.014.097-.02h.007l.104-.022c.007 0 .02 0 .028-.007.028 0 .055-.007.083-.007h.035c.035 0 .07-.007.111-.007h.09c.028 0 .05 0 .077.007h.014c.055.007.111.014.167.028a1.766 1.766 0 0 1 1.396 1.723zM10.043 1.39h10.93l-2.509 7.4c-.104.02-.208.055-.312.09l-2.64-5.385-2.648 5.35c-.104-.034-.216-.055-.327-.076l-2.494-7.38zm4.968 9.825a3.083 3.083 0 0 0-.938-1.668l1.438-2.904 1.452 2.967c-.43.43-.743.98-.868 1.605H15.01zm-3.481-1.098c.034-.007.062-.014.097-.02h.02c.029-.008.056-.008.084-.015h.028c.028 0 .049-.007.076-.007h.271c.028 0 .049.007.07.007.014 0 .02 0 .035.007.027.007.048.007.076.014.007 0 .014 0 .028.007l.097.02h.007c.028.008.056.015.083.029.007 0 .014.007.028.007.021.007.049.014.07.027.007 0 .014.007.02.007.028.014.056.021.084.035h.007a.374.374 0 0 1 .09.049h.007c.028.014.056.034.084.048.007 0 .007.007.013.007.028.014.05.035.077.049l.007.007c.083.062.16.132.236.201l.007.007a1.747 1.747 0 0 1 .48 1.209 1.752 1.752 0 0 1-3.502 0 1.742 1.742 0 0 1 1.32-1.695zm-6.838-.049c.966 0 1.751.786 1.751 1.751s-.785 1.751-1.75 1.751-1.752-.785-1.752-1.75.786-1.752 1.751-1.752zm16.163 6.025a3.07 3.07 0 0 1-1.508 2.133c-.758.438-1.689.577-2.669.716a17.29 17.29 0 0 0-1.64.291c-1.445.355-2.834 1.05-4.182 1.717-1.724.854-3.35 1.66-4.857 1.66a3.645 3.645 0 0 1-2.154-.688c-1.529-1.056-1.453-3.036-1.272-4.12.167-1.015.632-1.966 1.077-2.877.028-.055.049-.104.077-.16.152.056.312.098.479.126-.264 1.473.486 2.994 1.946 3.745l.264.139.284-.104c1.216-.431 2.342-1.133 3.336-2.071a9.334 9.334 0 0 0 1.445-1.716c.16.027.32.034.48.034a3.117 3.117 0 0 0 3.008-2.327h1.167a3.109 3.109 0 0 0 3.01 2.327c.576 0 1.11-.16 1.57-.43.18.52.236 1.063.139 1.605z", "kotlin": "M24 24H0V0h24L12 12Z", "notion": "M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z", "oneplus": "M0 3.74V24h20.26V12.428h-2.256v9.317H2.254V5.995h9.318V3.742zM18.004 0v3.74h-3.758v2.256h3.758v3.758h2.255V5.996H24V3.74h-3.758V0zm-6.45 18.756V8.862H9.562c0 .682-.228 1.189-.577 1.504-.367.297-.91.437-1.556.437h-.245v1.625h2.133v6.31h2.237z", "qualcomm": "M12 0C6.22933 0 1.5761 4.48645 1.5761 10.47394c0 6.00417 4.65323 10.47394 10.4239 10.47394.98402 0 1.93468-.13343 2.8353-.3836l1.13412 2.9187c.11675.31688.35025.51702.7672.51702h1.80125c.43364 0 .75052-.28353.55038-.83391l-1.46768-3.81932c2.88534-1.81793 4.80333-5.03683 4.80333-8.8895C22.4239 4.48644 17.77067 0 12 0m4.53648 16.5615l-1.31758-3.41904c-.11675-.28353-.35024-.55038-.85059-.55038h-1.71786c-.43363 0-.7672.28353-.56706.83391l1.73454 4.48645c-.56706.1501-1.18416.21682-1.81793.21682-4.2196 0-7.22168-3.31897-7.22168-7.65532C4.77832 6.1376 7.7804 2.81862 12 2.81862s7.22168 3.31898 7.22168 7.65532c0 2.5351-1.01737 4.70327-2.6852 6.08756", "react": "M14.23 12.004a2.236 2.236 0 0 1-2.235 2.236 2.236 2.236 0 0 1-2.236-2.236 2.236 2.236 0 0 1 2.235-2.236 2.236 2.236 0 0 1 2.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38-.318-.184-.688-.277-1.092-.278zm-.005 1.09v.006c.225 0 .406.044.558.127.666.382.955 1.835.73 3.704-.054.46-.142.945-.25 1.44-.96-.236-2.006-.417-3.107-.534-.66-.905-1.345-1.727-2.035-2.447 1.592-1.48 3.087-2.292 4.105-2.295zm-9.77.02c1.012 0 2.514.808 4.11 2.28-.686.72-1.37 1.537-2.02 2.442-1.107.117-2.154.298-3.113.538-.112-.49-.195-.964-.254-1.42-.23-1.868.054-3.32.714-3.707.19-.09.4-.127.563-.132zm4.882 3.05c.455.468.91.992 1.36 1.564-.44-.02-.89-.034-1.345-.034-.46 0-.915.01-1.36.034.44-.572.895-1.096 1.345-1.565zM12 8.1c.74 0 1.477.034 2.202.093.406.582.802 1.203 1.183 1.86.372.64.71 1.29 1.018 1.946-.308.655-.646 1.31-1.013 1.95-.38.66-.773 1.288-1.18 1.87-.728.063-1.466.098-2.21.098-.74 0-1.477-.035-2.202-.093-.406-.582-.802-1.204-1.183-1.86-.372-.64-.71-1.29-1.018-1.946.303-.657.646-1.313 1.013-1.954.38-.66.773-1.286 1.18-1.868.728-.064 1.466-.098 2.21-.098zm-3.635.254c-.24.377-.48.763-.704 1.16-.225.39-.435.782-.635 1.174-.265-.656-.49-1.31-.676-1.947.64-.15 1.315-.283 2.015-.386zm7.26 0c.695.103 1.365.23 2.006.387-.18.632-.405 1.282-.66 1.933-.2-.39-.41-.783-.64-1.174-.225-.392-.465-.774-.705-1.146zm3.063.675c.484.15.944.317 1.375.498 1.732.74 2.852 1.708 2.852 2.476-.005.768-1.125 1.74-2.857 2.475-.42.18-.88.342-1.355.493-.28-.958-.646-1.956-1.1-2.98.45-1.017.81-2.01 1.085-2.964zm-13.395.004c.278.96.645 1.957 1.1 2.98-.45 1.017-.812 2.01-1.086 2.964-.484-.15-.944-.318-1.37-.5-1.732-.737-2.852-1.706-2.852-2.474 0-.768 1.12-1.742 2.852-2.476.42-.18.88-.342 1.356-.494zm11.678 4.28c.265.657.49 1.312.676 1.948-.64.157-1.316.29-2.016.39.24-.375.48-.762.705-1.158.225-.39.435-.788.636-1.18zm-9.945.02c.2.392.41.783.64 1.175.23.39.465.772.705 1.143-.695-.102-1.365-.23-2.006-.386.18-.63.406-1.282.66-1.933zM17.92 16.32c.112.493.2.968.254 1.423.23 1.868-.054 3.32-.714 3.708-.147.09-.338.128-.563.128-1.012 0-2.514-.807-4.11-2.28.686-.72 1.37-1.536 2.02-2.44 1.107-.118 2.154-.3 3.113-.54zm-11.83.01c.96.234 2.006.415 3.107.532.66.905 1.345 1.727 2.035 2.446-1.595 1.483-3.092 2.295-4.11 2.295-.22-.005-.406-.05-.553-.132-.666-.38-.955-1.834-.73-3.703.054-.46.142-.944.25-1.438zm4.56.64c.44.02.89.034 1.345.034.46 0 .915-.01 1.36-.034-.44.572-.895 1.095-1.345 1.565-.455-.47-.91-.993-1.36-1.565z", "samsung": "M19.8166 10.2808l.0459 2.6934h-.023l-.7793-2.6934h-1.2837v3.3925h.8481l-.0458-2.785h.023l.8366 2.785h1.2264v-3.3925zm-16.149 0l-.6418 3.427h.9284l.4699-3.1175h.0229l.4585 3.1174h.9169l-.6304-3.4269zm5.1805 0l-.424 2.6132h-.023l-.424-2.6132H6.5788l-.0688 3.427h.8596l.023-3.0832h.0114l.573 3.0831h.8711l.5731-3.083h.023l.0228 3.083h.8596l-.0802-3.4269zm-7.2664 2.4527c.0343.0802.0229.1949.0114.2522-.0229.1146-.1031.2292-.3324.2292-.2177 0-.3438-.126-.3438-.3095v-.3323H0v.2636c0 .7679.6074.9971 1.2493.9971.6189 0 1.1346-.2178 1.2149-.7794.0458-.298.0114-.4928 0-.5616-.1605-.722-1.467-.9283-1.5588-1.3295-.0114-.0688-.0114-.1375 0-.1834.023-.1146.1032-.2292.3095-.2292.2063 0 .321.126.321.3095v.2063h.8595v-.2407c0-.745-.6762-.8596-1.1576-.8596-.6074 0-1.1117.2063-1.2034.7564-.023.149-.0344.2866.0114.4585.1376.7106 1.364.9169 1.5358 1.3524m11.152 0c.0343.0803.0228.1834.0114.2522-.023.1146-.1032.2292-.3324.2292-.2178 0-.3438-.126-.3438-.3095v-.3323h-.917v.2636c0 .7564.596.9857 1.2379.9857.6189 0 1.1232-.2063 1.2034-.7794.0459-.298.0115-.4814 0-.5616-.1375-.7106-1.4327-.9284-1.5243-1.318-.0115-.0688-.0115-.1376 0-.1835.0229-.1146.1031-.2292.3094-.2292.1948 0 .321.126.321.3095v.2063h.848v-.2407c0-.745-.6647-.8596-1.146-.8596-.6075 0-1.1004.1948-1.192.7564-.023.149-.023.2866.0114.4585.1376.7106 1.341.9054 1.513 1.3524m2.8882.4585c.2407 0 .3094-.1605.3323-.2522.0115-.0343.0115-.0917.0115-.126v-2.533h.871v2.4642c0 .0688 0 .1948-.0114.2292-.0573.6419-.5616.8482-1.192.8482-.6303 0-1.1346-.2063-1.192-.8482 0-.0344-.0114-.1604-.0114-.2292v-2.4642h.871v2.533c0 .0458 0 .0916.0115.126 0 .0917.0688.2522.3095.2522m7.1518-.0344c.2522 0 .3324-.1605.3553-.2522.0115-.0343.0115-.0917.0115-.126v-.4929h-.3553v-.5043H24v.917c0 .0687 0 .1145-.0115.2292-.0573.6303-.596.8481-1.2034.8481-.6075 0-1.1461-.2178-1.2034-.8481-.0115-.1147-.0115-.1605-.0115-.2293v-1.444c0-.0574.0115-.172.0115-.2293.0802-.6419.596-.8482 1.2034-.8482s1.1347.2063 1.2034.8482c.0115.1031.0115.2292.0115.2292v.1146h-.8596v-.1948s0-.0803-.0115-.1261c-.0114-.0802-.0802-.2521-.3438-.2521-.2521 0-.321.1604-.3438.2521-.0115.0458-.0115.1032-.0115.1605v1.5702c0 .0458 0 .0916.0115.126 0 .0917.0917.2522.3323.2522", "swift": "M7.508 0c-.287 0-.573 0-.86.002-.241.002-.483.003-.724.01-.132.003-.263.009-.395.015A9.154 9.154 0 0 0 4.348.15 5.492 5.492 0 0 0 2.85.645 5.04 5.04 0 0 0 .645 2.848c-.245.48-.4.972-.495 1.5-.093.52-.122 1.05-.136 1.576a35.2 35.2 0 0 0-.012.724C0 6.935 0 7.221 0 7.508v8.984c0 .287 0 .575.002.862.002.24.005.481.012.722.014.526.043 1.057.136 1.576.095.528.25 1.02.495 1.5a5.03 5.03 0 0 0 2.205 2.203c.48.244.97.4 1.498.495.52.093 1.05.124 1.576.138.241.007.483.009.724.01.287.002.573.002.86.002h8.984c.287 0 .573 0 .86-.002.241-.001.483-.003.724-.01a10.523 10.523 0 0 0 1.578-.138 5.322 5.322 0 0 0 1.498-.495 5.035 5.035 0 0 0 2.203-2.203c.245-.48.4-.972.495-1.5.093-.52.124-1.05.138-1.576.007-.241.009-.481.01-.722.002-.287.002-.575.002-.862V7.508c0-.287 0-.573-.002-.86a33.662 33.662 0 0 0-.01-.724 10.5 10.5 0 0 0-.138-1.576 5.328 5.328 0 0 0-.495-1.5A5.039 5.039 0 0 0 21.152.645 5.32 5.32 0 0 0 19.654.15a10.493 10.493 0 0 0-1.578-.138 34.98 34.98 0 0 0-.722-.01C17.067 0 16.779 0 16.492 0H7.508zm6.035 3.41c4.114 2.47 6.545 7.162 5.549 11.131-.024.093-.05.181-.076.272l.002.001c2.062 2.538 1.5 5.258 1.236 4.745-1.072-2.086-3.066-1.568-4.088-1.043a6.803 6.803 0 0 1-.281.158l-.02.012-.002.002c-2.115 1.123-4.957 1.205-7.812-.022a12.568 12.568 0 0 1-5.64-4.838c.649.48 1.35.902 2.097 1.252 3.019 1.414 6.051 1.311 8.197-.002C9.651 12.73 7.101 9.67 5.146 7.191a10.628 10.628 0 0 1-1.005-1.384c2.34 2.142 6.038 4.83 7.365 5.576C8.69 8.408 6.208 4.743 6.324 4.86c4.436 4.47 8.528 6.996 8.528 6.996.154.085.27.154.36.213.085-.215.16-.437.224-.668.708-2.588-.09-5.548-1.893-7.992z", "typescript": "M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 0 1 1.306.34v2.458a3.95 3.95 0 0 0-.643-.361 5.093 5.093 0 0 0-.717-.26 5.453 5.453 0 0 0-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 0 0-.623.242c-.17.104-.3.229-.393.374a.888.888 0 0 0-.14.49c0 .196.053.373.156.529.104.156.252.304.443.444s.423.276.696.41c.273.135.582.274.926.416.47.197.892.407 1.266.628.374.222.695.473.963.753.268.279.472.598.614.957.142.359.214.776.214 1.253 0 .657-.125 1.21-.373 1.656a3.033 3.033 0 0 1-1.012 1.085 4.38 4.38 0 0 1-1.487.596c-.566.12-1.163.18-1.79.18a9.916 9.916 0 0 1-1.84-.164 5.544 5.544 0 0 1-1.512-.493v-2.63a5.033 5.033 0 0 0 3.237 1.2c.333 0 .624-.03.872-.09.249-.06.456-.144.623-.25.166-.108.29-.234.373-.38a1.023 1.023 0 0 0-.074-1.089 2.12 2.12 0 0 0-.537-.5 5.597 5.597 0 0 0-.807-.444 27.72 27.72 0 0 0-1.007-.436c-.918-.383-1.602-.852-2.053-1.405-.45-.553-.676-1.222-.676-2.005 0-.614.123-1.141.369-1.582.246-.441.58-.804 1.004-1.089a4.494 4.494 0 0 1 1.47-.629 7.536 7.536 0 0 1 1.77-.201zm-15.113.188h9.563v2.166H9.506v9.646H6.789v-9.646H3.375z", "xcode": "M19.06 5.3327c.4517-.1936.7744-.2581 1.097-.1936.5163.1291.7744.5163.968.7098.1936.3872.9034.7744 1.2261.8389.2581.0645.7098-.6453 1.0325-1.2906.3227-.5808.5163-1.3552.4517-1.5488-.0645-.1936-.968-.5808-1.1616-.5808-.1291 0-.3872.1291-.8389.0645-.4517-.0645-.9034-.5808-1.1616-.968-.4517-.6453-1.097-1.0325-1.6778-1.3552-.6453-.3227-1.3552-.5163-2.065-.6453-1.0325-.2581-2.065-.4517-3.0975-.3227-.5808.0645-1.2906.1291-1.8069.3227-.0645 0-.1936.1936-.0645.1936s.5808.0645.5808.0645-.5807.1292-.5807.2583c0 .1291.0645.1291.1291.1291.0645 0 1.4842-.0645 2.065 0 .6453.1291 1.3552.4517 1.8069 1.2261.7744 1.4197.4517 2.7749.2581 3.2266-.968 2.1295-8.6472 15.2294-9.0344 16.1328-.3873.9034-.5163 1.4842.5807 2.065s1.6778.3227 2.0005-.0645c.3872-.5163 7.0339-17.1654 9.2925-18.2624zm-3.6138 8.7117h1.5488c1.0325 0 1.2261.5163 1.2261.7098.0645.5163-.1936 1.1616-1.2261 1.1616h-.968l.7744 1.2906c.4517.7744.2581 1.1616 0 1.4197-.3872.3872-1.2261.3872-1.6778-.4517l-.9034-1.5488c-.6453 1.4197-1.2906 2.9684-2.065 4.7753h4.0009c1.9359 0 3.5492-1.6133 3.5492-3.5492V6.5588c-.0645-.1291-.1936-.0645-.2581 0-.3872.4517-1.4842 2.0004-4.001 7.4856zm-9.8087 8.0019h-.3227c-2.3231 0-4.1945-1.8714-4.1945-4.1945V7.0105c0-2.3231 1.8714-4.1945 4.1945-4.1945h9.3571c-.1936-.1936-.968-.5163-1.7423-.4517-.3227 0-.968.1291-1.3552-.1291-.3872-.3227-.3227-.5163-.9034-.5163H4.9277c-2.6458 0-4.7753 2.1295-4.7753 4.7753v11.7447c0 2.6458 2.1295 4.7753 4.4527 4.7108.6452 0 .8388-.5162 1.0324-.9034zM20.4152 6.9459v10.9058c0 2.3231-1.8714 4.1945-4.1945 4.1945H11.897s-.3872 1.0325.8389 1.0325h3.8719c2.6458 0 4.7753-2.1295 4.7753-4.7753V8.8173c.0646-.9034-.7098-1.4842-.9679-1.8714zm-18.5851.0646v10.8413c0 1.9359 1.6133 3.5492 3.5492 3.5492h.5808c0-.0645.7744-1.4197 2.4522-4.2591.1936-.3872.4517-.7744.7098-1.2261H4.4114c-.5808 0-.9034-.3872-.968-.7098-.1291-.5163.1936-1.1616.9034-1.1616h2.3877l3.033-5.2916s-.7098-1.2906-.9034-1.6133c-.2582-.4517-.1291-.9034.129-1.1615.3872-.3872 1.0325-.5808 1.6778.4517l.2581.3872.2581-.3872c.5808-.8389.968-.7744 1.2906-.7098.5163.1291.8389.7098.3872 1.6133L8.864 14.0444h1.3552c.4517-.7744.9034-1.5488 1.3552-2.3877-.0645-.3227-.1291-.7098-.0645-1.0325.0645-.5163.3227-.968.6453-1.3552l.3872.6453c1.2261-2.1295 2.1295-3.9364 2.3877-4.6463.1291-.3872.3227-1.1616.1291-1.8069H5.3794c-2.0005.0001-3.5493 1.6134-3.5493 3.5494zM4.605 17.7872c0-.0645.7744-1.4197.7744-1.4197 1.2261-.3227 1.8069.4517 1.8714.5163 0 0-.8389 1.4842-1.097 1.7423s-.5808.3227-.9034.2581c-.5164-.129-.839-.6453-.6454-1.097z", "xiaomi": "M12 0C8.016 0 4.756.255 2.493 2.516.23 4.776 0 8.033 0 12.012c0 3.98.23 7.235 2.494 9.497C4.757 23.77 8.017 24 12 24c3.983 0 7.243-.23 9.506-2.491C23.77 19.247 24 15.99 24 12.012c0-3.984-.233-7.243-2.502-9.504C19.234.252 15.978 0 12 0zM4.906 7.405h5.624c1.47 0 3.007.068 3.764.827.746.746.827 2.233.83 3.676v4.54a.15.15 0 0 1-.152.147h-1.947a.15.15 0 0 1-.152-.148V11.83c-.002-.806-.048-1.634-.464-2.051-.358-.36-1.026-.441-1.72-.458H7.158a.15.15 0 0 0-.151.147v6.98a.15.15 0 0 1-.152.148H4.906a.15.15 0 0 1-.15-.148V7.554a.15.15 0 0 1 .15-.149zm12.131 0h1.949a.15.15 0 0 1 .15.15v8.892a.15.15 0 0 1-.15.148h-1.949a.15.15 0 0 1-.151-.148V7.554a.15.15 0 0 1 .151-.149zM8.92 10.948h2.046c.083 0 .15.066.15.147v5.352a.15.15 0 0 1-.15.148H8.92a.15.15 0 0 1-.152-.148v-5.352a.15.15 0 0 1 .152-.147Z"};
+  const NS = 'http://www.w3.org/2000/svg';
+  const INK = '#1e1e1e', RED = '#c2412d', REDFILL = '#eea596', MUTED = '#78716c', CARD = '#fff7ed', GREY = '#b9b2aa', GREEN = '#2f7d4f';
+  // Brand marks from Simple Icons (CC0). React is darkened from #61DAFB so it reads on paper.
+  const BRAND = { git: '#F05032', github: '#181717', githubactions: '#2088FF', react: '#149ECA', typescript: '#3178C6',
+    jest: '#C21325', kotlin: '#7F52FF', swift: '#F05138', android: '#34A853', apple: '#000000',
+    huggingface: '#E8A400', samsung: '#1428A0', oneplus: '#F5010C', xiaomi: '#FF6900', googleplay: '#414141', xcode: '#147EFB', notion: '#000000', atlassian: '#0052CC', google: '#4285F4', qualcomm: '#3253DC' };
+
+  function diagram(id, w, h, draw) {
+    const svg = document.getElementById(id);
+    if (!svg) return;
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    if (!window.rough) return;
+    const rc = rough.svg(svg);
+    let seed = 7;
+    const opts = (o) => Object.assign({ stroke: INK, strokeWidth: 1.7, roughness: 1.1, bowing: 0.9, hachureGap: 6, fillWeight: 1, seed: seed++ }, o || {});
+    const add = (n) => svg.appendChild(n);
+    const rr = (x, y, w, h, r) =>
+      `M${x + r} ${y} H${x + w - r} Q${x + w} ${y} ${x + w} ${y + r} V${y + h - r} Q${x + w} ${y + h} ${x + w - r} ${y + h} H${x + r} Q${x} ${y + h} ${x} ${y + h - r} V${y + r} Q${x} ${y} ${x + r} ${y} Z`;
+    const api = {
+      box: (x, y, bw, bh, o) => add(rc.path(rr(x, y, bw, bh, (o && o.r != null) ? o.r : 12), opts(o))),
+      line: (x1, y1, x2, y2, o) => add(rc.line(x1, y1, x2, y2, opts(o))),
+      poly: (pts, o) => add(rc.polygon(pts, opts(o))),
+      path: (d, o) => add(rc.path(d, opts(o))),
+      circle: (cx, cy, d, o) => add(rc.circle(cx, cy, d, opts(o))),
+      arrow: (x1, y1, x2, y2, o) => {
+        o = o || {};
+        const via = o.via;
+        const d = via ? `M${x1} ${y1} Q${via[0]} ${via[1]} ${x2} ${y2}` : `M${x1} ${y1} L${x2} ${y2}`;
+        add(rc.path(d, opts(o)));
+        const from = via || [x1, y1];
+        const a = Math.atan2(y2 - from[1], x2 - from[0]), L = 13, s = 0.45;
+        const head = Object.assign({}, o, { strokeLineDash: undefined });
+        add(rc.line(x2, y2, x2 - L * Math.cos(a - s), y2 - L * Math.sin(a - s), opts(head)));
+        add(rc.line(x2, y2, x2 - L * Math.cos(a + s), y2 - L * Math.sin(a + s), opts(head)));
+      },
+      text: (x, y, str, o) => {
+        o = o || {};
+        const size = o.size || 18;
+        const t = document.createElementNS(NS, 'text');
+        t.setAttribute('x', x);
+        t.setAttribute('y', y);
+        t.setAttribute('text-anchor', o.anchor || 'middle');
+        t.setAttribute('font-size', size);
+        t.setAttribute('fill', o.color || INK);
+        t.setAttribute('class', 'hand');
+        if (o.bold) t.setAttribute('font-weight', '700');
+        (Array.isArray(str) ? str : [str]).forEach((line, i) => {
+          const s = document.createElementNS(NS, 'tspan');
+          s.setAttribute('x', x);
+          if (i) s.setAttribute('dy', size * 1.3);
+          s.textContent = line;
+          t.appendChild(s);
+        });
+        svg.appendChild(t);
+      },
+      icon: (name, cx, cy, size) => {
+        const p = document.createElementNS(NS, 'path');
+        p.setAttribute('d', ICONS[name]);
+        p.setAttribute('fill', BRAND[name]);
+        p.setAttribute('transform', `translate(${cx - size / 2} ${cy - size / 2}) scale(${size / 24})`);
+        svg.appendChild(p);
+      },
+      person: (cx, top) => {
+        add(rc.circle(cx, top + 7, 13, opts({ fill: CARD, fillStyle: 'solid' })));
+        add(rc.path(`M${cx - 11} ${top + 30} Q${cx} ${top + 8} ${cx + 11} ${top + 30} Z`, opts({ fill: GREY, fillStyle: 'hachure', hachureGap: 3 })));
+      },
+      phone: (x, y, w, h) => {
+        add(rc.path(rr(x, y, w, h, 16), opts({ fill: CARD, fillStyle: 'solid', strokeWidth: 2 })));
+        add(rc.line(x + w / 2 - 12, y + 10, x + w / 2 + 12, y + 10, opts({ strokeWidth: 3 })));
+        add(rc.line(x + w / 2 - 16, y + h - 10, x + w / 2 + 16, y + h - 10, opts({ strokeWidth: 2 })));
+      },
+      cross: (cx, cy, s) => {
+        add(rc.line(cx - s, cy - s, cx + s, cy + s, opts({ stroke: RED, strokeWidth: 3 })));
+        add(rc.line(cx + s, cy - s, cx - s, cy + s, opts({ stroke: RED, strokeWidth: 3 })));
+      },
+      tick: (cx, cy, s) => {
+        add(rc.path(`M${cx - s} ${cy} L${cx - s / 3} ${cy + s * 0.7} L${cx + s} ${cy - s * 0.8}`, opts({ stroke: GREEN, strokeWidth: 3 })));
+      },
+      lock: (cx, top) => {
+        add(rc.path(`M${cx - 15} ${top + 22} V${top + 10} A15 15 0 0 1 ${cx + 15} ${top + 10} V${top + 22}`, opts({ strokeWidth: 2.2 })));
+        add(rc.rectangle(cx - 25, top + 20, 50, 38, opts({ fill: INK, fillStyle: 'hachure', hachureGap: 4 })));
+        add(rc.circle(cx, top + 37, 9, opts({ fill: CARD, fillStyle: 'solid' })));
+      },
+    };
+    draw(api);
+  }
+
+
+  // 1. Three chips in a phone
+  diagram('d-chips', 760, 285, (d) => {
+    const chip = (x) => {
+      d.box(x + 55, 56, 100, 92, { r: 8, fill: CARD, fillStyle: 'solid', strokeWidth: 2 });
+      for (let i = 0; i < 4; i++) {
+        const o = 68 + i * 22;
+        d.line(x + 45, o, x + 55, o, { strokeWidth: 1.4 });
+        d.line(x + 155, o, x + 165, o, { strokeWidth: 1.4 });
+      }
+    };
+    const cards = [
+      [20, 'CPU', ['a few strong cores', 'runs anything', 'slowest for AI'], INK],
+      [275, 'GPU', ['hundreds of small cores', 'fast at matrix math', 'on every phone'], GREEN],
+      [530, 'NPU', ['fastest per watt', 'own SDK per chip maker', 'compiled per chip'], RED],
+    ];
+    cards.forEach(([x, title, lines, color], i) => {
+      d.box(x, 10, 210, 265, { fill: CARD, fillStyle: 'solid', stroke: color === INK ? INK : color, strokeWidth: i === 1 ? 2.4 : 1.7 });
+      chip(x);
+      d.text(x + 105, 44, title, { size: 22, bold: true, color });
+      d.text(x + 105, 182, lines.slice(0, 2), { size: 14 });
+      d.text(x + 105, 240, lines[2], { size: 15, bold: true, color });
+    });
+    [[0, 0], [1, 0], [0, 1], [1, 1]].forEach(([c, r]) => d.box(95 + c * 30, 70 + r * 32, 22, 22, { r: 3, fill: GREY, fillStyle: 'hachure', hachureGap: 4 }));
+    for (let i = 0; i < 30; i++) {
+      const c = i % 6, r = Math.floor(i / 6);
+      d.box(343 + c * 13, 66 + r * 14, 9, 9, { r: 1, fill: GREEN, fillStyle: 'solid', roughness: 0.5, stroke: GREEN });
+    }
+    d.box(605, 70, 60, 64, { r: 4, fill: REDFILL, fillStyle: 'cross-hatch', hachureGap: 5 });
+  });
+
+  // 2. The file picks the engine
+  diagram('d-route', 760, 230, (d) => {
+    d.box(20, 30, 170, 52, { r: 8, fill: CARD, fillStyle: 'solid' });
+    d.box(20, 148, 170, 52, { r: 8, fill: REDFILL, fillStyle: 'hachure', hachureGap: 7 });
+    d.box(250, 85, 170, 60, { fill: CARD, fillStyle: 'solid' });
+    d.box(480, 20, 260, 72, { fill: CARD, fillStyle: 'solid' });
+    d.box(480, 138, 260, 72, { fill: REDFILL, fillStyle: 'hachure', hachureGap: 8, strokeWidth: 2.2 });
+    d.arrow(190, 56, 248, 104, { via: [230, 60] });
+    d.arrow(190, 174, 248, 128, { via: [230, 170] });
+    d.arrow(420, 104, 478, 56, { via: [450, 60] });
+    d.arrow(420, 128, 478, 174, { via: [450, 170] });
+    d.text(105, 62, 'model.gguf', { size: 16 });
+    d.text(105, 180, 'model.litertlm', { size: 16, bold: true });
+    d.text(335, 112, 'engine field', { size: 15, bold: true });
+    d.text(335, 132, 'set once at import', { size: 12, color: MUTED });
+    d.text(600, 50, 'llama.rn', { size: 18, bold: true });
+    d.text(600, 74, 'any GGUF · CPU on Android', { size: 13 });
+    d.icon('apple', 502, 38, 18);
+    d.icon('android', 718, 38, 18);
+    d.text(600, 168, 'LiteRT-LM', { size: 18, bold: true });
+    d.text(600, 192, 'GPU first · Android', { size: 13 });
+    d.icon('google', 502, 156, 18);
+    d.icon('android', 718, 156, 18);
+  });
+
+  // 3. GPU first, with a way down
+  diagram('d-chain', 760, 250, (d) => {
+    d.box(20, 90, 160, 64, { fill: CARD, fillStyle: 'solid' });
+    d.box(220, 90, 130, 64, { fill: REDFILL, fillStyle: 'hachure', hachureGap: 7, strokeWidth: 2.2 });
+    d.box(400, 90, 150, 64, { fill: CARD, fillStyle: 'solid' });
+    d.box(600, 90, 140, 64, { stroke: GREEN, strokeWidth: 2.4, fill: CARD, fillStyle: 'solid' });
+    d.box(220, 190, 130, 46, { stroke: MUTED, strokeLineDash: [7, 6] });
+    d.arrow(180, 122, 218, 122);
+    d.arrow(350, 122, 398, 122);
+    d.arrow(550, 122, 598, 122);
+    d.arrow(330, 90, 240, 88, { via: [285, 40] });
+    d.arrow(285, 154, 285, 188, { stroke: MUTED });
+    d.arrow(350, 213, 668, 156, { via: [620, 213], stroke: MUTED, strokeLineDash: [6, 5] });
+    d.text(100, 118, 'clamp context', { size: 15, bold: true });
+    d.text(100, 138, 'to free RAM', { size: 13 });
+    d.text(285, 128, 'GPU', { size: 22, bold: true });
+    d.text(285, 34, 'retry ×2 · 600 ms', { size: 14, color: RED });
+    d.text(475, 118, 'warm up', { size: 15, bold: true });
+    d.text(475, 138, 'prime the shaders', { size: 13 });
+    d.text(670, 128, 'ready', { size: 18, bold: true, color: GREEN });
+    d.text(285, 218, 'CPU', { size: 17, color: MUTED });
+    d.text(300, 176, 'fails', { size: 12, color: MUTED, anchor: 'start' });
+  });
+
+  // 4. Backend matrix on one Snapdragon phone
+  diagram('d-matrix', 760, 255, (d) => {
+    const cols = [[240, 'CPU'], [420, 'GPU'], [600, 'NPU']];
+    d.box(420, 12, 170, 236, { stroke: GREEN, strokeWidth: 2.4, fill: '#e3efe6', fillStyle: 'hachure', hachureGap: 9 });
+    d.icon('qualcomm', 32, 36, 20);
+    d.text(48, 42, 'Snapdragon 8s Gen 3', { anchor: 'start', size: 14, color: MUTED });
+    cols.forEach(([x, t]) => d.text(x + 85, 44, t, { size: 19, bold: true, color: t === 'GPU' ? GREEN : INK }));
+    d.line(20, 60, 740, 60, { strokeWidth: 2 });
+    d.line(20, 152, 740, 152, { stroke: GREY, strokeWidth: 1 });
+    const rows = [
+      [108, 'llama (.gguf)', [['tick', 'works'], ['tick', 'works'], ['cross', 'loads, gibberish']]],
+      [200, 'LiteRT (.litertlm)', [['cross', 'Status 13 error'], ['tick', 'works'], ['dash', 'not offered']]],
+    ];
+    rows.forEach(([y, label, cells]) => {
+      d.text(20, y + 5, label, { anchor: 'start', size: 16, bold: true });
+      cells.forEach(([mark, note], i) => {
+        const cx = cols[i][0] + 85;
+        if (mark === 'tick') d.tick(cx, y - 14, 11);
+        else if (mark === 'cross') d.cross(cx, y - 14, 9);
+        else d.line(cx - 10, y - 14, cx + 10, y - 14, { stroke: MUTED, strokeWidth: 2.4 });
+        d.text(cx, y + 22, note, { size: 13, color: mark === 'cross' ? RED : mark === 'tick' ? GREEN : MUTED });
+      });
+    });
+  });
+
+  // 5. Stateless vs stateful
+  diagram('d-state', 760, 330, (d) => {
+    d.text(190, 22, 'llama.rn: stateless', { size: 18 });
+    d.text(570, 22, 'LiteRT: stateful', { size: 18, color: RED });
+    d.box(110, 40, 160, 44, { fill: CARD, fillStyle: 'solid' });
+    d.text(190, 68, 'app', { size: 16, bold: true });
+    ['system', 'tools', 'chat', 'chat', 'new'].forEach((t, i) => {
+      const x = 40 + i * 62;
+      d.box(x, 110, 54, 34, { r: 4, fill: i === 1 ? REDFILL : CARD, fillStyle: i === 1 ? 'hachure' : 'solid', hachureGap: 5 });
+      d.text(x + 27, 132, t, { size: 12 });
+    });
+    d.arrow(190, 84, 190, 108);
+    d.text(190, 168, 'everything, every message', { size: 14, color: RED });
+    d.arrow(190, 176, 190, 218);
+    d.box(110, 220, 160, 50, { fill: CARD, fillStyle: 'solid', strokeWidth: 2.2 });
+    d.text(190, 250, 'llama.rn', { size: 16, bold: true });
+
+    d.box(490, 40, 160, 44, { fill: CARD, fillStyle: 'solid' });
+    d.text(570, 68, 'app', { size: 16, bold: true });
+    d.box(543, 110, 54, 34, { r: 4, fill: CARD, fillStyle: 'solid', strokeWidth: 2 });
+    d.text(570, 132, 'new', { size: 12, bold: true });
+    d.arrow(570, 84, 570, 108);
+    d.text(570, 168, 'only the new message', { size: 14, color: GREEN });
+    d.arrow(570, 176, 570, 196);
+    d.box(420, 198, 300, 82, { fill: CARD, fillStyle: 'solid', strokeWidth: 2.2 });
+    d.text(450, 222, 'LiteRT keeps the conversation', { size: 13, anchor: 'start', color: MUTED });
+    ['system', 'tools', 'chat', 'chat'].forEach((t, i) => {
+      const x = 440 + i * 68;
+      d.box(x, 234, 58, 32, { r: 4, fill: i === 1 ? REDFILL : CARD, fillStyle: i === 1 ? 'hachure' : 'solid', hachureGap: 5 });
+      d.text(x + 29, 255, t, { size: 12 });
+    });
+    d.text(570, 314, 'change tools or system prompt → start over', { size: 14, color: RED, bold: true });
+  });
+
+  // The native clamp on a mid-range phone
+  diagram('d-clamp', 760, 200, (d) => {
+    const x0 = 200, px = 0.1;            // 4096 tokens → 410 px
+    d.text(20, 58, 'requested', { anchor: 'start', size: 15 });
+    d.box(x0, 36, 4096 * px, 34, { r: 4, stroke: MUTED, strokeLineDash: [7, 6] });
+    d.text(x0 + 4096 * px + 10, 59, '4,096 tokens', { anchor: 'start', size: 14, color: MUTED });
+    d.text(20, 118, 'granted', { anchor: 'start', size: 15, bold: true });
+    d.box(x0, 96, 880 * px, 34, { r: 4, fill: REDFILL, fillStyle: 'hachure', hachureGap: 5, stroke: RED });
+    d.text(x0 + 880 * px + 10, 119, '880 tokens', { anchor: 'start', size: 16, bold: true, color: RED });
+    d.text(x0 + 880 * px + 110, 119, '← too small for tool schemas', { anchor: 'start', size: 13, color: RED });
+    d.text(20, 172, '≈ (2.6 GB free − 2.5 GB model) ÷ 0.15 MB per token', { anchor: 'start', size: 14, color: MUTED });
+    d.icon('qualcomm', 726, 166, 18);
+  });
+
+  // Load time on one phone
+  diagram('d-load', 760, 220, (d) => {
+    const x0 = 200, px = 22;              // 1 s → 22 px
+    const rows = [
+      ['GPU, load 1', 17.86, 'works', GREEN],
+      ['GPU, load 2', 17.21, 'works', GREEN],
+      ['CPU', 9.80, 'then Status 13', RED],
+    ];
+    rows.forEach(([label, s, note, color], i) => {
+      const y = 22 + i * 52;
+      d.text(20, y + 22, label, { anchor: 'start', size: 15, bold: i < 2 });
+      d.box(x0, y, s * px, 32, { r: 4, fill: i < 2 ? '#e3efe6' : GREY, fillStyle: 'hachure', hachureGap: 5, stroke: i < 2 ? GREEN : INK });
+      d.text(x0 + s * px + 10, y + 22, s.toFixed(1) + ' s', { anchor: 'start', size: 15, bold: true });
+      d.text(x0 + s * px + 64, y + 22, note, { anchor: 'start', size: 13, color });
+      if (i === 2) d.cross(x0 + s * px + 180, y + 16, 8);
+    });
+    d.text(20, 200, 'Gemma 4 E2B (.litertlm) · Snapdragon 8s Gen 3 · from device logs', { anchor: 'start', size: 12, color: MUTED });
+  });
+
+  diagram('d-stats', 760, 118, (d) => {
+    const items = [["v0.0.95", "second engine added", null], ["0 layers", "GPU offload by default", "#c2412d"], ["38–41", "chars/sec on the GPU", null]];
+    const w = 224, gap = 28;
+    items.forEach(([big, small, color], i) => {
+      const x = 10 + i * (w + gap), c = color || INK;
+      d.box(x, 8, w, 100, { fill: CARD, fillStyle: 'solid', stroke: c, strokeWidth: i === 1 ? 2.2 : 1.7 });
+      d.text(x + w / 2, 56, big, { size: 34, bold: true, color: c });
+      d.text(x + w / 2, 88, small, { size: 14, color: MUTED });
+    });
+  });
+
+  diagram('d-mark', 68, 68, (d) => {
+    // chip: square die with pins and a grid of cores
+    d.box(16, 16, 36, 36, { r: 5, fill: CARD, fillStyle: 'solid', strokeWidth: 2 });
+    [24, 34, 44].forEach((p) => { d.line(p, 8, p, 16); d.line(p, 52, p, 60); d.line(8, p, 16, p); d.line(52, p, 60, p); });
+    d.box(24, 24, 20, 20, { r: 2, fill: GREEN, fillStyle: 'hachure', stroke: GREEN, strokeWidth: 1.6, hachureGap: 4 });
+  });
+})();
+</script>
