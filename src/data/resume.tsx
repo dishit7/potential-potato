@@ -9,7 +9,7 @@ export const DATA = {
   locationLink: "https://www.google.com/maps/place/pune",
   description:
      "FullStack AI Engineer |0.1x Developer",
-  summary: "I am currenly working as an SDE-I at Axentia, I love building things, exploring everything tech, and of course, food 🍜",
+  summary: "I am currently working as a Forward Deployed Engineer at Wednesday Solutions, I love building things, exploring everything tech, and of course, food 🍜",
   avatarUrl: "/gohan_photo-optimized.jpg",
   skills: [
     "JavaScript",
