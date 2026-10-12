@@ -9,7 +9,7 @@ import { DATA } from "@/data/resume";
 import Link from "next/link";
 import Markdown from "react-markdown";
 import GitHubCalendarWrapper from "@/components/githubcalendar";
-import Image from "next/image";
+import { FeaturedOffGrid } from "@/components/featured-off-grid";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -18,10 +18,9 @@ export default function Page() {
     <main className="flex flex-col min-h-[100dvh] space-y-10">
        
       <section id="hero">
-      
         <div className="mx-auto w-full max-w-2xl space-y-8">
-          <div className="gap-2 flex justify-between">
-            <div className="flex-col flex flex-1 space-y-1.5">
+          <div className="flex justify-between gap-2">
+            <div className="flex flex-1 flex-col space-y-1.5">
               <BlurFadeText
                 delay={BLUR_FADE_DELAY}
                 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none"
@@ -34,15 +33,20 @@ export default function Page() {
                 text={DATA.description}
               />
             </div>
-               <BlurFade delay={BLUR_FADE_DELAY}>
-          <Avatar className="size-32 border">
-            <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
-            <AvatarFallback>{DATA.initials}</AvatarFallback>
-          </Avatar>
-        </BlurFade>
+            <BlurFade delay={BLUR_FADE_DELAY}>
+              <Avatar className="size-32 border">
+                <AvatarImage
+                  alt={DATA.name}
+                  src={DATA.avatarUrl}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                />
+                <AvatarFallback>{DATA.initials}</AvatarFallback>
+              </Avatar>
+            </BlurFade>
           </div>
         </div>
-      
       </section>
       <section id="about">
         <BlurFade delay={BLUR_FADE_DELAY * 3}>
@@ -84,15 +88,18 @@ export default function Page() {
           ))}
         </div>
       </section>
+      <BlurFade delay={BLUR_FADE_DELAY * 7}>
+        <FeaturedOffGrid />
+      </BlurFade>
       <section id="education">
         <div className="flex min-h-0 flex-col gap-y-3">
-          <BlurFade delay={BLUR_FADE_DELAY * 7}>
+          <BlurFade delay={BLUR_FADE_DELAY * 8}>
             <h2 className="text-xl font-bold">Education</h2>
           </BlurFade>
           {DATA.education.map((education, id) => (
             <BlurFade
               key={education.school}
-              delay={BLUR_FADE_DELAY * 8 + id * 0.05}
+              delay={BLUR_FADE_DELAY * 9 + id * 0.05}
             >
               <ResumeCard
                 key={education.school}
@@ -156,6 +163,7 @@ export default function Page() {
                   image={project.image}
                   video={project.video}
                   links={project.links}
+                  ribbon={"ribbon" in project ? project.ribbon : undefined}
                 />
               </BlurFade>
             ))}

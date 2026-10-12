@@ -25,6 +25,7 @@ interface Props {
     type: string;
     href: string;
   }[];
+  ribbon?: string;
   className?: string;
 }
 
@@ -38,14 +39,20 @@ export function ProjectCard({
   image,
   video,
   links,
+  ribbon,
   className,
 }: Props) {
   return (
     <Card
       className={
-        "flex flex-col overflow-hidden border hover:shadow-lg transition-all duration-300 ease-out h-full"
+        "relative flex flex-col overflow-hidden border hover:shadow-lg transition-all duration-300 ease-out h-full"
       }
     >
+      {ribbon && (
+        <div className="pointer-events-none absolute -right-9 top-5 z-20 w-36 rotate-45 bg-foreground py-1 text-center text-[9px] font-bold uppercase tracking-[0.12em] text-background shadow-sm">
+          {ribbon}
+        </div>
+      )}
       <Link
         href={href || "#"}
         className={cn("block cursor-pointer", className)}

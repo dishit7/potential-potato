@@ -10,21 +10,20 @@ export const DATA = {
   description:
      "FullStack AI Engineer |0.1x Developer",
   summary: "I am currenly working as an SDE-I at Axentia, I love building things, exploring everything tech, and of course, food 🍜",
-  avatarUrl: "/gohan_photo.png", // Update with your actual avatar path
+  avatarUrl: "/gohan_photo-optimized.jpg",
   skills: [
     "JavaScript",
     "TypeScript",
     "React",
+    "React Native",
     "Next.js",
     "Node.js",
     "Redis",
-    "Python",
     "PostgreSQL",
     "Docker",
     "AWS",
     "Azure",
     "Kafka",
-    "FastAPI",
     "Socket.IO",
     "Stripe",
     "LemonSqueezy",
@@ -70,6 +69,18 @@ export const DATA = {
 
   work: [
     {
+      company: "Wednesday Solutions",
+      href: "#",
+      badges: [],
+      location: "",
+      title: "Forward Deployed Engineer",
+      logoUrl: "/wednesday_logo.png",
+      start: "March 2026",
+      end: "Present",
+      description:
+        "Designed and built a cross-platform continuous audio intelligence system for Off Grid, using Android foreground services and iOS background audio sessions, Silero VAD, local Whisper/Parakeet/Nemotron transcription, TitaNet speaker identification, and LLM-powered insights. Maintainer and core contributor to Off Grid, an open-source private AI platform with 100K+ downloads across Android and iOS. Added LiteRT as a second on-device inference engine alongside llama.cpp for faster model execution and improved GPU utilization; implemented local MCP support for tool-enabled AI. Solved model download failures on Samsung and other OEM devices caused by long signed Hugging Face CDN URLs by redesigning Android downloads around WorkManager. Designed a Git submodule architecture to separate proprietary IP from the public open-source codebase.",
+    },
+    {
       company: "Axentia",
       href: "https://axentia.ai", // Update with actual company URL
       badges: [],
@@ -77,7 +88,7 @@ export const DATA = {
       title: "Software Development Engineer-I",
       logoUrl: "/axentiai_logo.jpg", // Add company logo
       start: "June 2025",
-      end: "Present",
+      end: "February 2026",
       description:
         "Developed an AI-powered cursor-like tool for policy management, ensuring compliance with US company standards including HIPAA and NIST frameworks. Implemented agentic RAG (Retrieval-Augmented Generation) architecture for intelligent document query and retrieval systems. Built and maintained microservice architecture using Node.js and FastAPI, handling high-throughput document processing workflows. Architected and deployed  Kafka on Azure private servers for scalable document processing pipelines.",
     },
@@ -101,7 +112,7 @@ export const DATA = {
       title: "Freelance Developer",
       logoUrl: "/freelance.svg", // Add freelance icon
       start: "2024",
-      end: "Present",
+      end: "January 2025",
       description:
         "Built an AI SaaS platform for a US-based client as part of a team, handling full-stack development and AI integration. Contributed to the SuperMemory project, a popular open-source repository with over 8.3k stars on GitHub. Developed internal tools for bulk messaging with multiple API integrations, serving enterprise clients.",
     },
@@ -241,56 +252,8 @@ export const DATA = {
       ],
       image: "/elytra.png", // Add project image
       video: "", // Add project video if available
+      ribbon: "Hackathon Project",
     },
-     {
-    title: "RiskAssist",
-    href: "https://policy-app.vercel.app/",
-    dates: "2025",
-    active: true,
-    description:
-      "An AI-powered policy compliance app designed to help companies ensure adherence to US standards including HIPAA and NIST. Features intelligent policy generation from scratch and AI-assisted modification of uploaded policies using GPT integration and vector database retrieval for contextual compliance suggestions.",
-    technologies: [
-      "Next.js",
-      "TypeScript",
-      "Node.js",
-      "Upstash Vector DB",
-    ],
-    links: [
-      {
-        type: "Website",
-        href: "https://policy-app.vercel.app/",
-        icon: <Icons.globe className="size-3" />,
-      },
-    ],
-    image: "/policyapp2.png",
-    video: "",
-    },
-     {
-  title: "KyndNet",
-  href: "https://kyndnet-landing.com", // if landing page exists
-  dates: "2025",
-  active: false,
-  description: "Built a TaskRabbit-style freelancing marketplace for a client featuring comprehensive Stripe marketplace integration for secure multi-party payments. Implemented geolocation-based service filtering and intelligent matching system connecting freelancers with local customers. Developed complete user flows for service booking, real-time notifications, and automated payment processing between parties.",
-  technologies: [
-    "Next.js", 
-    "TypeScript", 
-    "Stripe Connect", 
-    "Geolocation API", 
-    "PostgreSQL",
-    "Real-time Notifications"
-  ],
-  image: "/kyndnet.png",
-       video: "",
-    links: [
-      {
-        type: "Website",
-        href: "https://kyndnet.vercel.app",
-        icon: <Icons.globe className="size-3" />,
-      },
-      
-       ],
-    
-},
   ],
 
   hackathons: [
